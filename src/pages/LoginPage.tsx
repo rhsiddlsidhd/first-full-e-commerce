@@ -5,6 +5,7 @@ import Button from "../components/loginpage/Button";
 import Card from "../components/loginpage/Card";
 import Header from "../components/loginpage/Header";
 import { useNavigate } from "react-router-dom";
+import Form from "../components/loginpage/Form";
 
 const LoginPage: React.FC = () => {
   const [loginForm, setLoginForm] = useState({
@@ -22,6 +23,9 @@ const LoginPage: React.FC = () => {
   const handleGoogle = () => {
     navigate("/");
   };
+  const handleNavigateToSignUP = () => {
+    navigate("/signup");
+  };
   const handleSignInForm = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { type, value } = e.target;
     setLoginForm({ ...loginForm, [type]: value });
@@ -30,10 +34,7 @@ const LoginPage: React.FC = () => {
     <Card>
       <section className="w-4/6  h-full flex flex-col p-6 max-lg:w-full">
         <Header logo="LoGo Here" text="Welcome home" />
-        <form
-          className="flex flex-col justify-between max-lg:items-center w-3/4 max-lg:w-full"
-          onSubmit={handleSubmit}
-        >
+        <Form handleSubmit={handleSubmit}>
           <InputField
             id="user_id"
             placeholder="Email"
@@ -53,14 +54,14 @@ const LoginPage: React.FC = () => {
             className="mb-4 text-xs flex items-center text-slate-400 hover:text-black cursor-pointer justify-center"
             onClick={handlePssword}
           >
-            For got password?
+            Forgot password?
           </p>
           <div className="w-full flex justify-center">
             <Button customStyle="bg-pink-400" type="submit">
               Login →
             </Button>
           </div>
-        </form>
+        </Form>
         <section className="w-3/4 flex flex-col items-center max-lg:w-full max-lg:justify-center">
           <p className="text-slate-400 text-xs mb-4">or continue with</p>
           <Button
@@ -78,13 +79,16 @@ const LoginPage: React.FC = () => {
             <p className="text-slate-400 text-xs">
               Don't have an account yet ?
             </p>
-            <button className="text-slate-400 hover:text-black cursor-pointer  ">
+            <button
+              className="text-slate-400 hover:text-black cursor-pointer"
+              onClick={handleNavigateToSignUP}
+            >
               Sign Up for free
             </button>
           </div>
         </section>
       </section>
-      <section className="w-2/6 max-lg:w-full max-lg:h-96 rounded-l-3xl bg-sky-100 flex items-center relative max-lg:hidden  ">
+      <section className="w-2/6 max-lg:w-full max-lg:h-96 rounded-l-3xl bg-sky-100 flex items-center relative max-lg:hidden  rounded-lg ">
         <img
           src={loginPageCharatorImg}
           alt="이미지"
