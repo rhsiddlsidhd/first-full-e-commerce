@@ -1,6 +1,6 @@
 import React from "react";
 
-interface inputProprs {
+interface InputProprs {
   id: string;
   placeholder: string;
   type: string;
@@ -9,7 +9,7 @@ interface inputProprs {
   value: string;
 }
 
-const InputField: React.FC<inputProprs> = ({
+const InputField: React.FC<InputProprs> = ({
   id,
   placeholder,
   type,
@@ -32,7 +32,7 @@ const InputField: React.FC<inputProprs> = ({
         onChange={onChange}
         value={value}
         className={`mb-6 outline-none bg-sky-100 h-8 w-full text-xs focus:ring ${
-          error && "invalid:ring-red-500"
+          error ? "invalid:ring-red-500" : ""
         } `}
       />
     </label>

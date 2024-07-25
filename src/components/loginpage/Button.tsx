@@ -1,12 +1,12 @@
 import React, { ReactNode } from "react";
-interface buttonProps {
+interface ButtonProps {
   customStyle?: string;
   children: ReactNode;
-  type: "submit" | "reset" | "button";
+  type: "submit" | "button";
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-const Button: React.FC<buttonProps> = ({
+const Button: React.FC<ButtonProps> = ({
   customStyle,
   type,
   children,
