@@ -6,12 +6,27 @@ import { loginPageCharatorImg } from "../assets/images";
 import Form from "../components/loginpage/Form";
 import Radio from "../components/loginpage/Radio";
 import Button from "../components/loginpage/Button";
-import { emailRegex, passwordRegex, userIdRegex } from "../utils/regex";
+import { validateSignUpForm } from "../utils/validations";
+
+export interface SignUpFormData {
+  userid: string;
+  email: string;
+  password: string;
+  confirmpassword: string;
+  gender: string;
+}
+export interface ErrorMessages {
+  userid?: string;
+  email?: string;
+  password?: string;
+  confirmpassword?: string;
+  gender?: string;
+}
 
 const SignUpPage: React.FC = () => {
   const genderRef = useRef<HTMLDivElement>(null);
 
-  const [signUpFormData, setSignUpFormData] = useState({
+  const [signUpFormData, setSignUpFormData] = useState<SignUpFormData>({
     userid: "",
     email: "",
     password: "",
@@ -19,16 +34,7 @@ const SignUpPage: React.FC = () => {
     gender: "",
   });
 
-  const [error, setError] = useState({
-    userid: "",
-    email: "",
-    password: "",
-    confirmpassword: "",
-  });
-
-  useEffect(() => {
-    console.log("error", error);
-  }, [error]);
+  const [error, setError] = useState<ErrorMessages>({});
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,53 +42,13 @@ const SignUpPage: React.FC = () => {
      * signUpFormData 가지고 유효성검사 진행 후 회원가입 API 호출
      */
 
-    let valid = true;
-
-    if (!userIdRegex(signUpFormData.userid)) {
-      setError({
-        ...error,
-        userid: "영문자로 시작하는 영문자 또는 숫자 6~20자 입력해주세요",
-      });
-      valid = false;
-    }
-
-    if (valid && !emailRegex(signUpFormData.email)) {
-      setError({ ...error, email: "이메일형식에 맞춰 입력해주세요." });
-      valid = false;
-    }
-
-    if (valid && !passwordRegex(signUpFormData.password)) {
-      setError({
-        ...error,
-        password:
-          "8~16자 영문, 숫자, 특수문자를 최소 한가지씩 조합을 입력해주세요.",
-      });
-      valid = false;
-    }
-
-    if (
-      (valid && signUpFormData.password !== signUpFormData.confirmpassword) ||
-      (valid && !signUpFormData.confirmpassword)
-    ) {
-      setError({
-        ...error,
-        confirmpassword: "비밀번호가 일치하지 않습니다.",
-      });
-      valid = false;
-    }
-
-    if (valid && !signUpFormData.gender) {
-      if (genderRef.current) {
-        genderRef.current.className =
-          "flex justify-center items-center border-2 border-red-500";
-      }
-      valid = false; // 에러처리해줘야함
-    }
+    const { valid, errors } = validateSignUpForm(signUpFormData);
 
     if (valid) {
       // 회원가입 API 호출
       console.log("회원가입 API 호출");
     } else {
+      setError(errors);
       console.log("error");
     }
   };
@@ -93,10 +59,15 @@ const SignUpPage: React.FC = () => {
     if (name === "gender") {
       genderRef.current &&
         (genderRef.current.className = "flex justify-center items-center");
-
       setSignUpFormData({ ...signUpFormData, [name]: value });
     } else {
-      setError((prevError) => ({ ...prevError, [id]: "" }));
+      /**
+       * Error 메세지가 저장되어 있는 key만
+       * 초기화 시켜주고 비어있으면 X
+       */
+      if (error[id as keyof ErrorMessages] !== "") {
+        setError({ ...error, [id]: "" });
+      }
       setSignUpFormData({ ...signUpFormData, [id]: value });
     }
   };

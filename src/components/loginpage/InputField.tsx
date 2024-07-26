@@ -22,7 +22,9 @@ const InputField: React.FC<InputProprs> = ({
       <div className="flex justify-between w-full mb-2">
         <p>{placeholder}</p>
         {error && (
-          <p className="text-red-600 text-xs flex items-center">{error}</p>
+          <p className="text-red-600 text-error flex justify-end items-center w-3/5 break-words text-wrap">
+            {error}
+          </p>
         )}
       </div>
       <input
@@ -31,9 +33,7 @@ const InputField: React.FC<InputProprs> = ({
         type={type}
         onChange={onChange}
         value={value}
-        className={`mb-6 outline-none bg-sky-100 h-8 w-full text-xs focus:ring ${
-          error ? "invalid:ring-red-500" : ""
-        } `}
+        className={`mb-6 outline-none bg-sky-100 h-8 w-full text-xs focus:ring`}
       />
     </label>
   );

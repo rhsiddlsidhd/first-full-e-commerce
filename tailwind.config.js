@@ -12,6 +12,9 @@ module.exports = {
       height: {
         test: "48rem",
       },
+      fontSize: {
+        error: "0.6rem",
+      },
     },
   },
   variants: {
