@@ -18,12 +18,12 @@ const uri = process.env.LOCAL_MONGODB_ADDRESS;
 mongoose
   .connect(`${uri}`)
   .then(() => {
-    console.log(`MONGODB CONNECT SUCCESS🎉 🎉 🎉 🎉`);
+    console.log(`MONGODB CONNECT SUCCESS🎉 🎉 🎉 `);
   })
   .catch((err) => {
-    console.log(`MONGODB CONNECT FAIL 🐛 🐛 🐛 🐛`, err.message);
+    console.log(`MONGODB CONNECT FAIL 🐛 🐛 🐛 `, err.message);
   });
 
 app.listen(port, () => {
-  console.log(`Server OPEN 🚀 🚀 🚀 🚀`);
+  console.log(`Server OPEN 🚀 🚀 🚀 `);
 });
