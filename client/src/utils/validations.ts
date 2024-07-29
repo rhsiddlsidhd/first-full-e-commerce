@@ -7,8 +7,8 @@ export const validateSignUpForm = (formData: formData) => {
   let errors: ErrorMessages = {};
   let valid = true;
 
-  if (!userIdRegex(formData.userid)) {
-    errors.userid = "영문자로 시작하는 영문자 또는 숫자 6~20자 입력해주세요.";
+  if (!userIdRegex(formData.userId)) {
+    errors.userId = "영문자로 시작하는 영문자 또는 숫자 6~20자 입력해주세요.";
     valid = false;
   }
 

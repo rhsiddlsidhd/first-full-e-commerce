@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useRef, useState } from "react";
+import React, { FormEvent, useRef, useState } from "react";
 import Card from "../components/loginpage/Card";
 import Header from "../components/loginpage/Header";
 import InputField from "../components/loginpage/InputField";
@@ -7,16 +7,18 @@ import Form from "../components/loginpage/Form";
 import Radio from "../components/loginpage/Radio";
 import Button from "../components/loginpage/Button";
 import { validateSignUpForm } from "../utils/validations";
+import { fetchCreateUserApi } from "../api/SignUpPageApi/createUserApi";
+import { useNavigate } from "react-router-dom";
 
 export interface SignUpFormData {
-  userid: string;
+  userId: string;
   email: string;
   password: string;
   confirmpassword: string;
   gender: string;
 }
 export interface ErrorMessages {
-  userid?: string;
+  userId?: string;
   email?: string;
   password?: string;
   confirmpassword?: string;
@@ -25,9 +27,10 @@ export interface ErrorMessages {
 
 const SignUpPage: React.FC = () => {
   const genderRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const [signUpFormData, setSignUpFormData] = useState<SignUpFormData>({
-    userid: "",
+    userId: "",
     email: "",
     password: "",
     confirmpassword: "",
@@ -43,10 +46,12 @@ const SignUpPage: React.FC = () => {
      */
 
     const { valid, errors } = validateSignUpForm(signUpFormData);
+    const { userId, email, password, gender } = signUpFormData;
 
     if (valid) {
       // 회원가입 API 호출
-      console.log("회원가입 API 호출");
+      fetchCreateUserApi({ userId, email, password, gender });
+      navigate("/login");
     } else {
       setError(errors);
       console.log("error");
@@ -78,12 +83,12 @@ const SignUpPage: React.FC = () => {
         <Header logo="Sign Up page" text="Welcome Sign Up" />
         <Form handleSubmit={handleSubmit}>
           <InputField
-            id="userid"
+            id="userId"
             placeholder="ID"
             type="text"
             onChange={(e) => handleSignUpForm(e)}
-            value={signUpFormData.userid}
-            error={error.userid}
+            value={signUpFormData.userId}
+            error={error.userId}
           />
           <InputField
             id="email"
