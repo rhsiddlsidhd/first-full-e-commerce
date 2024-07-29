@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const signUpApi = require("./signUp.api");
 
 /**
  * router.get('/', function(req, res) {
@@ -9,5 +10,10 @@ const router = express.Router();
  * 
  * 
  */
+
+/**
+ * /api/signup/...
+ */
+router.use("/signup", signUpApi);
 
 module.exports = router;

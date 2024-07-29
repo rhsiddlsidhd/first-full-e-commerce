@@ -2,18 +2,18 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const router = require("./router/router");
+const indexRouter = require("./router/router");
 const cors = require("cors");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use("/api", router);
+app.use("/api", indexRouter);
 
 const port = process.env.PORT_NUMBER;
 
-const uri = process.env.LOCAL_MONGODB_ADDRESS;
+const uri = process.env.MONGODB_ADDRESS;
 
 mongoose
   .connect(`${uri}`)
