@@ -12,14 +12,14 @@ userController.createUser = async (req, res) => {
       status: "create user success",
     });
   } catch (error) {
-    if (error.message.includes("중복")) {
-      res.status(409).json({
+    if (error.message.includes("중복입니다.")) {
+      return res.status(409).json({
         status: "create fail",
         error: error.message,
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       status: "Server error",
       error: error.message,
     });
