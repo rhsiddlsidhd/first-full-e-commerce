@@ -1,9 +1,12 @@
+import React from "react";
 import { ErrorMessages, SignUpFormData } from "../pages/SignUpPage";
 import { userIdRegex, emailRegex, passwordRegex } from "./regex";
 
-interface formData extends SignUpFormData {}
+interface signUpFormDataProps extends SignUpFormData {
+  genderRef?: React.MutableRefObject<HTMLDivElement | null>;
+}
 
-export const validateSignUpForm = (formData: formData) => {
+export const validateSignUpForm = (formData: signUpFormDataProps) => {
   let errors: ErrorMessages = {};
   let valid = true;
 
@@ -31,10 +34,10 @@ export const validateSignUpForm = (formData: formData) => {
     valid = false;
   }
 
-  if (valid && !formData.gender) {
-    errors.gender = "성별을 선택해 주세요.";
+  if (valid && !formData.gender && formData.genderRef?.current) {
+    formData.genderRef.current.className =
+      "flex justify-center items-center border-2 border-red-300";
     valid = false;
   }
-
   return { valid, errors };
 };
