@@ -7,16 +7,21 @@ import Form from "../components/loginpage/Form";
 import Radio from "../components/loginpage/Radio";
 import Button from "../components/loginpage/Button";
 import { validateSignUpForm } from "../utils/validations";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCreateUser } from "../actions/userActions";
+import { AppDispatch, RootState } from "../reducer/store";
+import { resetError } from "../reducer/userReducer";
 
 export interface SignUpFormData {
-  userid: string;
+  userId: string;
   email: string;
   password: string;
   confirmpassword: string;
   gender: string;
 }
 export interface ErrorMessages {
-  userid?: string;
+  userId?: string;
   email?: string;
   password?: string;
   confirmpassword?: string;
@@ -24,10 +29,13 @@ export interface ErrorMessages {
 }
 
 const SignUpPage: React.FC = () => {
-  const genderRef = useRef<HTMLDivElement>(null);
+  const genderRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { error: userError } = useSelector((state: RootState) => state.user);
 
   const [signUpFormData, setSignUpFormData] = useState<SignUpFormData>({
-    userid: "",
+    userId: "",
     email: "",
     password: "",
     confirmpassword: "",
@@ -36,20 +44,42 @@ const SignUpPage: React.FC = () => {
 
   const [error, setError] = useState<ErrorMessages>({});
 
+  useEffect(() => {
+    if (userError) {
+      const resetErrors: ErrorMessages = {
+        userId: "",
+        email: "",
+        password: "",
+        confirmpassword: "",
+      };
+      if (userError.includes("아이디")) {
+        resetErrors.userId = userError;
+      }
+      if (userError.includes("이메일")) {
+        resetErrors.email = userError;
+      }
+      setError(resetErrors);
+    }
+  }, [userError]);
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     /**
      * signUpFormData 가지고 유효성검사 진행 후 회원가입 API 호출
      */
-
-    const { valid, errors } = validateSignUpForm(signUpFormData);
+    dispatch(resetError());
+    // const { valid, errors } = validateSignUpForm(signUpFormData);
+    const { valid, errors } = validateSignUpForm({
+      ...signUpFormData,
+      genderRef,
+    });
+    const { userId, email, password, gender } = signUpFormData;
 
     if (valid) {
       // 회원가입 API 호출
-      console.log("회원가입 API 호출");
+
+      dispatch(fetchCreateUser({ userId, email, password, gender, navigate }));
     } else {
       setError(errors);
-      console.log("error");
     }
   };
 
@@ -78,12 +108,12 @@ const SignUpPage: React.FC = () => {
         <Header logo="Sign Up page" text="Welcome Sign Up" />
         <Form handleSubmit={handleSubmit}>
           <InputField
-            id="userid"
+            id="userId"
             placeholder="ID"
             type="text"
             onChange={(e) => handleSignUpForm(e)}
-            value={signUpFormData.userid}
-            error={error.userid}
+            value={signUpFormData.userId}
+            error={error.userId}
           />
           <InputField
             id="email"
