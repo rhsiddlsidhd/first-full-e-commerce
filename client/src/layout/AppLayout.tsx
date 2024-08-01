@@ -19,7 +19,11 @@ interface AppLayoutProps {
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  return <div>{children}</div>;
+  return (
+    <>
+      <div>{children}</div>
+    </>
+  );
 };
 
 export default AppLayout;

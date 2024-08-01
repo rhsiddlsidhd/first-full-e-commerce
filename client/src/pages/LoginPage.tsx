@@ -6,17 +6,26 @@ import Card from "../components/loginpage/Card";
 import Header from "../components/loginpage/Header";
 import { useNavigate } from "react-router-dom";
 import Form from "../components/loginpage/Form";
+import { useDispatch } from "react-redux";
+import { fetchLoginWithUserIdAndEmail } from "../actions/authAction";
+import { AppDispatch } from "../reducer/store";
 
 const LoginPage: React.FC = () => {
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
   });
-
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    /**로그인 api 호출
+     */
+    console.log("클릭");
+    const { email, password } = loginForm;
+    dispatch(fetchLoginWithUserIdAndEmail({ email, password }));
   };
+
   const handlePssword = () => {
     navigate("/");
   };

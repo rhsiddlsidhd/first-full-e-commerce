@@ -29,7 +29,7 @@ export interface ErrorMessages {
 }
 
 const SignUpPage: React.FC = () => {
-  const genderRef = useRef<HTMLDivElement | null>(null);
+  const genderRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { error: userError } = useSelector((state: RootState) => state.user);
@@ -67,7 +67,6 @@ const SignUpPage: React.FC = () => {
      * signUpFormData 가지고 유효성검사 진행 후 회원가입 API 호출
      */
     dispatch(resetError());
-    // const { valid, errors } = validateSignUpForm(signUpFormData);
     const { valid, errors } = validateSignUpForm({
       ...signUpFormData,
       genderRef,

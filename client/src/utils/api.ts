@@ -5,6 +5,8 @@ const REACT_APP_BACKEND_API_BASEURL = process.env.REACT_APP_BACKEND_API_BASEURL;
 const api = axios.create({
   baseURL: `${REACT_APP_BACKEND_API_BASEURL}`,
   //   headers: { "X-Custom-Header": "foobar" },
+
+  withCredentials: true,
 });
 
 api.interceptors.request.use(

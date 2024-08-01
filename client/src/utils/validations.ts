@@ -3,7 +3,7 @@ import { ErrorMessages, SignUpFormData } from "../pages/SignUpPage";
 import { userIdRegex, emailRegex, passwordRegex } from "./regex";
 
 interface signUpFormDataProps extends SignUpFormData {
-  genderRef?: React.MutableRefObject<HTMLDivElement | null>;
+  genderRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const validateSignUpForm = (formData: signUpFormDataProps) => {
