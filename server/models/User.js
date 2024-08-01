@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const jwt = require("jsonwebtoken");
+const JWT_PRIVATEKEY = process.env.JWT_PRIVATEKEY;
 
 const userSchema = new Schema(
   {
@@ -28,6 +30,17 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.methods.generateToken = function () {
+  const accessToken = jwt.sign({ _id: this._id }, JWT_PRIVATEKEY, {
+    expiresIn: "1h",
+  });
+  const refreshToken = jwt.sign({ _id: this._id }, JWT_PRIVATEKEY, {
+    expiresIn: "7d",
+  });
+
+  return { accessToken, refreshToken };
+};
 
 const User = mongoose.model("User", userSchema);
 

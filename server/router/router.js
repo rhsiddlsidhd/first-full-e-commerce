@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const signUpApi = require("./signUp.api");
+const signUpApi = require("./signup.api");
+const authApi = require("./auth.api");
 
 /**
  * router.get('/', function(req, res) {
@@ -15,5 +16,6 @@ const signUpApi = require("./signUp.api");
  * /api/signup/...
  */
 router.use("/signup", signUpApi);
+router.use("/auth", authApi);
 
 module.exports = router;

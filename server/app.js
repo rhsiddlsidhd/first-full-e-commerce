@@ -4,9 +4,15 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const indexRouter = require("./router/router");
 const cors = require("cors");
-
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 app.use(bodyParser.json());
 
 app.use("/api", indexRouter);
