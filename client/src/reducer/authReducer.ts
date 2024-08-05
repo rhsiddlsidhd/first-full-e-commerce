@@ -3,14 +3,12 @@ import { fetchLoginWithUserIdAndEmail } from "../actions/authAction";
 
 interface authState {
   loading: boolean;
-  error: string;
-  accessToken: string;
+  error: string | undefined;
 }
 
 const initialState: authState = {
   loading: false,
-  error: "",
-  accessToken: "",
+  error: undefined,
 };
 
 const authSilce = createSlice({
@@ -29,11 +27,7 @@ const authSilce = createSlice({
       })
       .addCase(fetchLoginWithUserIdAndEmail.rejected, (state, action) => {
         state.loading = false;
-        if (typeof action.payload === "string") {
-          state.error = action.payload;
-        } else {
-          state.error = "";
-        }
+        state.error = action.payload || "";
       });
   },
 });

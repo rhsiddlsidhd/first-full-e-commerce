@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import AppLayout from "./layout/AppLayout";
+
 import AppRouter from "./routes/AppRouter";
 /**
  * 함수의 들어가는 메서드 타입 지정
@@ -9,11 +9,7 @@ import AppRouter from "./routes/AppRouter";
  */
 
 const App: React.FC = () => {
-  return (
-    <AppLayout>
-      <AppRouter />
-    </AppLayout>
-  );
+  return <AppRouter />;
 };
 
 export default App;

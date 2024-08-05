@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { googleIcon, loginPageCharatorImg } from "../assets/images";
 import InputField from "../components/loginpage/InputField";
 import Button from "../components/loginpage/Button";
@@ -9,21 +9,30 @@ import Form from "../components/loginpage/Form";
 import { useDispatch } from "react-redux";
 import { fetchLoginWithUserIdAndEmail } from "../actions/authAction";
 import { AppDispatch } from "../reducer/store";
+import { useAppSelector } from "../reducer/hook";
 
 const LoginPage: React.FC = () => {
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
   });
+  const { error } = useAppSelector((state) => state.auth);
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [authError, setAuthError] = useState("");
+
+  useEffect(() => {
+    if (error) setAuthError(error);
+  }, [dispatch, error]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     /**로그인 api 호출
      */
-    console.log("클릭");
+
     const { email, password } = loginForm;
-    dispatch(fetchLoginWithUserIdAndEmail({ email, password }));
+    dispatch(fetchLoginWithUserIdAndEmail({ email, password, navigate }));
   };
 
   const handlePssword = () => {
@@ -39,6 +48,7 @@ const LoginPage: React.FC = () => {
     const { type, value } = e.target;
     setLoginForm({ ...loginForm, [type]: value });
   };
+
   return (
     <Card>
       <section className="w-4/6  h-full flex flex-col p-6 max-lg:w-full">
@@ -50,12 +60,12 @@ const LoginPage: React.FC = () => {
             type="email"
             onChange={(e) => handleSignInForm(e)}
             value={loginForm.email}
+            error={authError}
           />
           <InputField
             id="user_password"
             placeholder="Password"
             type="password"
-            error="패스워드가 틀렸습니다."
             onChange={(e) => handleSignInForm(e)}
             value={loginForm.password}
           />

@@ -4,7 +4,8 @@ const REACT_APP_BACKEND_API_BASEURL = process.env.REACT_APP_BACKEND_API_BASEURL;
 
 const api = axios.create({
   baseURL: `${REACT_APP_BACKEND_API_BASEURL}`,
-  //   headers: { "X-Custom-Header": "foobar" },
+  //Content-type에 대해 알아보기
+  headers: { "Content-Type": "application/json" },
 
   withCredentials: true,
 });
@@ -12,12 +13,16 @@ const api = axios.create({
 api.interceptors.request.use(
   function (config) {
     // 요청이 전달되기 전에 작업 수행
+    const token = sessionStorage.getItem("accessToken");
+    if (token) {
+      config.headers.authorization = `Bearer ${token}`;
+    }
     return config;
   },
   function (error) {
     // 요청 오류가 있는 작업 수행
 
-    // error = error.response;
+    console.log("REQUERST ERROR ======", error);
     return Promise.reject(error);
   }
 );
@@ -32,7 +37,7 @@ api.interceptors.response.use(
   function (error) {
     // 2xx 외의 범위에 있는 상태 코드는 이 함수를 트리거 합니다.
     // 응답 오류가 있는 작업 수행
-
+    console.log("RESPONSE ERROR ======", error);
     return Promise.reject(error);
   }
 );
