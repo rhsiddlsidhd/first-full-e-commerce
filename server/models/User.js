@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const jwt = require("jsonwebtoken");
+
 const JWT_PRIVATEKEY = process.env.JWT_PRIVATEKEY;
 
 const userSchema = new Schema(
@@ -40,6 +41,16 @@ userSchema.methods.generateToken = function () {
   });
 
   return { accessToken, refreshToken };
+};
+
+userSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  delete obj.__v;
+  delete obj.updatedAt;
+  delete obj.createdAt;
+  delete obj._id;
+  return obj;
 };
 
 const User = mongoose.model("User", userSchema);
