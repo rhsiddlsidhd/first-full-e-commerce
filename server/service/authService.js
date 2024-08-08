@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const JWT_PRIVATEKEY = process.env.JWT_PRIVATEKEY;
 
 const userService = {};
 
@@ -18,7 +20,19 @@ userService.loginWithUserIdAndEmail = async ({ userId, email, password }) => {
 
   const { accessToken, refreshToken } = await user.generateToken();
 
-  return { accessToken, refreshToken, user };
+  return { accessToken, refreshToken };
+};
+
+userService.accessTokenExp = async ({ accessToken }) => {
+  const decoded = jwt.verify(accessToken, JWT_PRIVATEKEY);
+
+  if (!decoded) {
+    throw new Error("유효하지 않은 토큰입니다.");
+  }
+
+  const { exp } = decoded;
+
+  return { exp };
 };
 
 module.exports = userService;

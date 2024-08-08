@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const indexRouter = require("./router/router");
@@ -14,7 +15,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
-
+app.use(cookieParser());
 app.use("/api", indexRouter);
 
 const port = process.env.PORT_NUMBER;

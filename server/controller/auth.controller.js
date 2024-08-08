@@ -28,12 +28,14 @@ authController.loginWithUserIdAndEmail = async (req, res) => {
   try {
     const { userId, email, password } = req.body;
 
-    const { accessToken, refreshToken, user } =
+    const { accessToken, refreshToken } =
       await userService.loginWithUserIdAndEmail({
         userId,
         email,
         password,
       });
+
+    const { exp } = await userService.accessTokenExp({ accessToken });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -44,8 +46,9 @@ authController.loginWithUserIdAndEmail = async (req, res) => {
 
     return res.status(200).json({
       status: "Login Success",
-      user,
-      accessToken: accessToken,
+      exp,
+
+      accessToken,
     });
   } catch (error) {
     return res.status(400).json({
@@ -81,6 +84,66 @@ authController.authenticate = async (req, res, next) => {
   } catch (error) {
     return res.status(500).json({
       status: "server fail",
+      error: error.message,
+    });
+  }
+};
+
+authController.refreshTokenVerify = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      throw new Error("refreshToken not found");
+    }
+
+    jwt.verify(refreshToken, JWT_PRIVATEKEY, function (err, decoded) {
+      if (err) {
+        return res.status(401).json({
+          status: "fail",
+          error: err.message,
+        });
+      }
+
+      req.userId = decoded._id;
+      next();
+    });
+  } catch (error) {
+    res.status(500).json({
+      ststus: "server fail",
+      error: error.message,
+    });
+  }
+};
+
+authController.generateNewToken = async (req, res) => {
+  try {
+    const { userId } = req;
+
+    if (!userId) {
+      throw new Error("userId not found");
+    }
+
+    const accessToken = jwt.sign(
+      {
+        _id: userId,
+      },
+      JWT_PRIVATEKEY,
+      { expiresIn: "1h" }
+    );
+
+    const { exp } = await userService.accessTokenExp({ accessToken });
+
+    console.log("controller exp:", exp);
+
+    res.status(200).json({
+      status: "success",
+      accessToken,
+      exp,
+    });
+  } catch (error) {
+    res.status(500).json({
+      ststus: "server fail",
       error: error.message,
     });
   }

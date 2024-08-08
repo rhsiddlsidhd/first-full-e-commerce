@@ -8,4 +8,10 @@ router.post("/login", authController.loginWithUserIdAndEmail);
 
 router.get("/me", authController.authenticate, userController.getUser);
 
+router.get(
+  "/token",
+  authController.refreshTokenVerify,
+  authController.generateNewToken
+);
+
 module.exports = router;

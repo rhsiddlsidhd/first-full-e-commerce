@@ -34,7 +34,7 @@ const userSchema = new Schema(
 
 userSchema.methods.generateToken = function () {
   const accessToken = jwt.sign({ _id: this._id }, JWT_PRIVATEKEY, {
-    expiresIn: "1h",
+    expiresIn: "1m",
   });
   const refreshToken = jwt.sign({ _id: this._id }, JWT_PRIVATEKEY, {
     expiresIn: "7d",
