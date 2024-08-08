@@ -9,27 +9,52 @@ interface LoginApiProps {
   navigate: NavigateFunction;
 }
 
+interface dataType {
+  exp: number;
+}
+
 export const fetchLoginWithUserIdAndEmail = createAsyncThunk<
-  void,
+  dataType,
   LoginApiProps,
-  { rejectValue: string }
+  { rejectValue: { error: string } }
 >(
   "auth/fetchLoginWithUserIdAndEmail",
-  async ({ email, password, navigate }, thunkApi) => {
+  async ({ email, password, navigate }, { rejectWithValue }) => {
     try {
       const res = await api.post("/auth/login", {
         email,
         password,
       });
+
+      console.log(res.data);
+
       sessionStorage.setItem("accessToken", res.data.accessToken);
       if (res) {
         navigate("/");
       }
-      return;
+      return res.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        return thunkApi.rejectWithValue(error.response.data.error);
+        return rejectWithValue(error.response.data);
       }
     }
   }
 );
+
+export const fetchNewAccessToken = createAsyncThunk<
+  dataType,
+  void,
+  { rejectValue: { error: string } }
+>("auth/fetchNewAccessToken", async (_, { rejectWithValue }) => {
+  try {
+    // accesstoken 및 exp 전달
+    const res = await api.get("/auth/token");
+
+    sessionStorage.setItem("accessToken", res.data.accessToken);
+    return res.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+});

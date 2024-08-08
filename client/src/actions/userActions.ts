@@ -50,10 +50,10 @@ const fetchGetUser = createAsyncThunk<
 >("user/fetchGetUser", async (_, { rejectWithValue }) => {
   try {
     const res = await api.get("/auth/me");
-    console.log("res", res.data.user);
 
     return res.data.user;
   } catch (error) {
+    console.log("getUser", error);
     if (axios.isAxiosError(error) && error.response) {
       return rejectWithValue(error.response.data.error);
     }

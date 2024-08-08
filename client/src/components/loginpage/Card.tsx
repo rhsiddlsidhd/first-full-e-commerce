@@ -16,9 +16,11 @@ const Card: React.FC<CardProps> = ({ children }) => {
     dispatch(userActions.fetchGetUser());
   }, [dispatch]);
 
-  if (user) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="w-full min-h-screen flex justify-center  bg-gradient-to-r from-sky-300 to-pink-500 items-center   ">
