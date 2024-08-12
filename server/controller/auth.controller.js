@@ -47,7 +47,6 @@ authController.loginWithUserIdAndEmail = async (req, res) => {
     return res.status(200).json({
       status: "Login Success",
       exp,
-
       accessToken,
     });
   } catch (error) {
@@ -129,7 +128,8 @@ authController.generateNewToken = async (req, res) => {
         _id: userId,
       },
       JWT_PRIVATEKEY,
-      { expiresIn: "1h" }
+      // { expiresIn: "1h" }
+      { expiresIn: "1m" }
     );
 
     const { exp } = await userService.accessTokenExp({ accessToken });
