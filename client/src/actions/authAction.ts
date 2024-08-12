@@ -9,12 +9,8 @@ interface LoginApiProps {
   navigate: NavigateFunction;
 }
 
-interface dataType {
-  exp: number;
-}
-
 export const fetchLoginWithUserIdAndEmail = createAsyncThunk<
-  dataType,
+  void,
   LoginApiProps,
   { rejectValue: { error: string } }
 >(
@@ -26,9 +22,12 @@ export const fetchLoginWithUserIdAndEmail = createAsyncThunk<
         password,
       });
 
-      console.log(res.data);
+      const { exp, accessToken } = res.data;
 
-      sessionStorage.setItem("accessToken", res.data.accessToken);
+      sessionStorage.setItem(
+        "accessToken",
+        JSON.stringify({ exp, accessToken })
+      );
       if (res) {
         navigate("/");
       }
@@ -42,16 +41,17 @@ export const fetchLoginWithUserIdAndEmail = createAsyncThunk<
 );
 
 export const fetchNewAccessToken = createAsyncThunk<
-  dataType,
+  void,
   void,
   { rejectValue: { error: string } }
 >("auth/fetchNewAccessToken", async (_, { rejectWithValue }) => {
   try {
     // accesstoken 및 exp 전달
     const res = await api.get("/auth/token");
+    const { exp, accessToken } = res.data;
 
-    sessionStorage.setItem("accessToken", res.data.accessToken);
-    return res.data;
+    sessionStorage.setItem("accessToken", JSON.stringify({ exp, accessToken }));
+    return;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       return rejectWithValue(error.response.data);

@@ -8,14 +8,14 @@ interface authState {
   loading: boolean;
   error: string | undefined;
   isRefresh: boolean;
-  exp: number;
+  exp: number | null;
 }
 
 const initialState: authState = {
   loading: false,
   error: "",
   isRefresh: false,
-  exp: 0,
+  exp: null,
 };
 
 const authSilce = createSlice({
@@ -31,7 +31,11 @@ const authSilce = createSlice({
       .addCase(fetchLoginWithUserIdAndEmail.fulfilled, (state, action) => {
         state.loading = false;
         state.error = "";
-        state.exp = action.payload.exp;
+        const authData = sessionStorage.getItem("accessToken");
+        if (authData) {
+          const { exp } = JSON.parse(authData);
+          state.exp = exp;
+        }
       })
       .addCase(fetchLoginWithUserIdAndEmail.rejected, (state, action) => {
         state.loading = false;
@@ -44,7 +48,11 @@ const authSilce = createSlice({
       .addCase(fetchNewAccessToken.fulfilled, (state, action) => {
         state.loading = false;
         state.error = "";
-        state.exp = action.payload.exp;
+        const authData = sessionStorage.getItem("accessToken");
+        if (authData) {
+          const { exp } = JSON.parse(authData);
+          state.exp = exp;
+        }
       })
       .addCase(fetchNewAccessToken.rejected, (state, action) => {
         state.loading = false;

@@ -14,9 +14,12 @@ api.interceptors.request.use(
   function (config) {
     // 요청이 전달되기 전에 작업 수행
     const token = sessionStorage.getItem("accessToken");
+
     if (token) {
-      config.headers.authorization = `Bearer ${token}`;
+      const decodedToken = JSON.parse(token);
+      config.headers.authorization = `Bearer ${decodedToken.accessToken}`;
     }
+
     return config;
   },
   function (error) {
