@@ -128,8 +128,8 @@ authController.generateNewToken = async (req, res) => {
         _id: userId,
       },
       JWT_PRIVATEKEY,
-      // { expiresIn: "1h" }
-      { expiresIn: "1m" }
+      { expiresIn: "1h" }
+      // { expiresIn: "1m" }
     );
 
     const { exp } = await userService.accessTokenExp({ accessToken });
@@ -147,6 +147,27 @@ authController.generateNewToken = async (req, res) => {
   }
 };
 
+// authController.logout = async (req, res) => {
+//   try {
+//     // refresh 토큰 삭제
+//     res.clearCookie("refreshToken", {
+//       httpOnly: true,
+//       secure: false,
+//       maxAge: 0,
+//       path: "/",
+//     });
+
+//     res.status(200).json({
+//       status: "success",
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       status: "server fail",
+//       error: error.message,
+//     });
+//   }
+// };
+
 authController.logout = async (req, res) => {
   try {
     // refresh 토큰 삭제
@@ -159,10 +180,11 @@ authController.logout = async (req, res) => {
 
     res.status(200).json({
       status: "success",
+      message: "Logout successful",
     });
   } catch (error) {
     res.status(500).json({
-      status: "server fail",
+      status: "error",
       error: error.message,
     });
   }
