@@ -109,7 +109,7 @@ authController.refreshTokenVerify = async (req, res, next) => {
     });
   } catch (error) {
     res.status(500).json({
-      ststus: "server fail",
+      status: "server fail",
       error: error.message,
     });
   }
@@ -134,8 +134,6 @@ authController.generateNewToken = async (req, res) => {
 
     const { exp } = await userService.accessTokenExp({ accessToken });
 
-    console.log("controller exp:", exp);
-
     res.status(200).json({
       status: "success",
       accessToken,
@@ -143,7 +141,28 @@ authController.generateNewToken = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      ststus: "server fail",
+      status: "server fail",
+      error: error.message,
+    });
+  }
+};
+
+authController.logout = async (req, res) => {
+  try {
+    // refresh 토큰 삭제
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 0,
+      path: "/",
+    });
+
+    res.status(200).json({
+      status: "success",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "server fail",
       error: error.message,
     });
   }
