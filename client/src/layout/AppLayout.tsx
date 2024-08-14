@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { userActions } from "../actions/userActions";
 import { useAppDispatch, useAppSelector } from "../reducer/hook";
-import { fetchNewAccessToken } from "../actions/authAction";
+import { fetchLogout, fetchNewAccessToken } from "../actions/authAction";
 
-export interface userData {
+export interface UserData {
   userId: string;
   email: string;
   gender: string;
@@ -18,16 +18,20 @@ const AppLayout: React.FC = () => {
    access 토큰 X => refresh 토큰 확인후 재발급
    *
    */
+
+  //'{ auth: authState; } & PersistPartial' 형식에 'error' 속성이 없습니다.
   const { exp } = useAppSelector((state) => state.auth);
   const { user } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
-  const [member, setMember] = useState<userData | null>(null);
+  const [member, setMember] = useState<UserData | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(userActions.fetchGetUser());
   }, [dispatch]);
 
   useEffect(() => {
+    console.log("user", user);
     if (user !== null) {
       setMember(user);
     }
@@ -71,9 +75,8 @@ const AppLayout: React.FC = () => {
      * 추적감지상황
      * 1. 로그인 직후 exp 만료직후 또는 만료 상황 추적 (갱신)
      * 2. 클라이언트가 accesstoken을 직접 수동으로 조작시 (로그아웃)
-     * 3.
      */
-
+    console.log({ exp });
     if (exp) {
       const expOffset = 40;
       const timer = (exp - expOffset) * 1000 - Date.now();
@@ -90,7 +93,7 @@ const AppLayout: React.FC = () => {
       }
     } else {
       //exp 가 없는경우 => 임의로 누가 수동으로 조작했을경우 로그아웃처리
-      // dispatch(fetchNewAccessToken());
+      // dispatch(fetchLogout());
     }
   }, [dispatch, exp]);
 
@@ -98,11 +101,20 @@ const AppLayout: React.FC = () => {
   //이문제는 setTimeout은 한번만 실행하고 하지않음
   //이걸 방지할 수 있는 방법은 ?
 
+  const handleLogout = () => {
+    dispatch(fetchLogout({ navigate }));
+  };
+
   return (
     <div>
       <div>header</div>
       {member !== null ? <div>회원</div> : <div>비회원</div>}
-      <div>로그아웃</div>
+      <div
+        onClick={handleLogout}
+        className="cursor-pointer hover:text-red-400 w-fit"
+      >
+        로그아웃
+      </div>
       <Outlet />
     </div>
   );

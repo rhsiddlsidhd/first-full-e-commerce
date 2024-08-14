@@ -49,9 +49,38 @@ export const fetchNewAccessToken = createAsyncThunk<
     // accesstoken 및 exp 전달
     const res = await api.get("/auth/token");
     const { exp, accessToken } = res.data;
+    console.log("갱신", res);
 
     sessionStorage.setItem("accessToken", JSON.stringify({ exp, accessToken }));
     return;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+});
+
+export interface NavigateProps {
+  navigate: NavigateFunction;
+}
+
+export const fetchLogout = createAsyncThunk<
+  void,
+  NavigateProps,
+  { rejectValue: { error: string } }
+>("auth/fetchLogout", async ({ navigate }, { rejectWithValue }) => {
+  try {
+    //로그아웃 get이 아닌 post
+    //Why?
+
+    const res = await api.post("/auth/logout");
+    if (res.status !== 200) {
+      throw new Error("로그아웃 실패");
+    } else {
+      sessionStorage.removeItem("accessToken");
+      navigate("/login");
+      return;
+    }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       return rejectWithValue(error.response.data);

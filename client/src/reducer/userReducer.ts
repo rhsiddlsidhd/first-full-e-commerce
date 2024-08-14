@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchCreateUser, userActions } from "../actions/userActions";
-import { userData } from "../layout/AppLayout";
+import { UserData } from "../layout/AppLayout";
 
 interface UserState {
   loading: boolean;
   error: string | undefined;
-  user: userData | null;
+  user: UserData | null;
 }
 
 const initialState: UserState = {

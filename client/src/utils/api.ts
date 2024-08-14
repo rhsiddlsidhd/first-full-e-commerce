@@ -25,7 +25,7 @@ api.interceptors.request.use(
   function (error) {
     // 요청 오류가 있는 작업 수행
 
-    console.log("REQUERST ERROR ======", error);
+    console.log("REQUERST ERROR ", error);
     return Promise.reject(error);
   }
 );
@@ -40,7 +40,7 @@ api.interceptors.response.use(
   function (error) {
     // 2xx 외의 범위에 있는 상태 코드는 이 함수를 트리거 합니다.
     // 응답 오류가 있는 작업 수행
-    console.log("RESPONSE ERROR ======", error);
+    console.log("RESPONSE ERROR ", error);
     return Promise.reject(error);
   }
 );

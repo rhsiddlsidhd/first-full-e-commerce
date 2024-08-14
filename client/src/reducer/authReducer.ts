@@ -1,21 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   fetchLoginWithUserIdAndEmail,
+  fetchLogout,
   fetchNewAccessToken,
 } from "../actions/authAction";
 
 interface authState {
   loading: boolean;
-  error: string | undefined;
+  error: string;
   isRefresh: boolean;
-  exp: number | null;
+  exp: number;
+  isLogout: boolean;
 }
 
 const initialState: authState = {
   loading: false,
   error: "",
   isRefresh: false,
-  exp: null,
+  exp: 0,
+  isLogout: false,
 };
 
 const authSilce = createSlice({
@@ -31,6 +34,7 @@ const authSilce = createSlice({
       .addCase(fetchLoginWithUserIdAndEmail.fulfilled, (state, action) => {
         state.loading = false;
         state.error = "";
+
         const authData = sessionStorage.getItem("accessToken");
         if (authData) {
           const { exp } = JSON.parse(authData);
@@ -39,7 +43,7 @@ const authSilce = createSlice({
       })
       .addCase(fetchLoginWithUserIdAndEmail.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.error;
+        state.error = action.payload?.error || "";
       })
       .addCase(fetchNewAccessToken.pending, (state) => {
         state.loading = true;
@@ -56,7 +60,17 @@ const authSilce = createSlice({
       })
       .addCase(fetchNewAccessToken.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.error;
+        state.error = action.payload?.error || "";
+      })
+      .addCase(fetchLogout.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(fetchLogout.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(fetchLogout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.error || "";
       });
   },
 });
