@@ -1,5 +1,6 @@
 const express = require("express");
 const userController = require("../controller/user.controller");
+const wrapAsyncController = require("../middlewears/wrapAsyncController");
 const router = express.Router();
 
 /**
@@ -7,6 +8,6 @@ const router = express.Router();
  * post ,get, update , delete
  *
  */
-router.post("/", userController.createUser);
+router.post("/", wrapAsyncController(userController.createUser));
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const userService = require("../service/authService");
+const CustomError = require("../middlewears/customError");
 const JWT_PRIVATEKEY = process.env.JWT_PRIVATEKEY;
 
 const authController = {};
@@ -25,169 +26,139 @@ const authController = {};
  */
 
 authController.loginWithUserIdAndEmail = async (req, res) => {
-  try {
-    const { userId, email, password } = req.body;
+  // try {
+  const { userId, email, password } = req.body;
 
-    const { accessToken, refreshToken } =
-      await userService.loginWithUserIdAndEmail({
-        userId,
-        email,
-        password,
-      });
-
-    const { exp } = await userService.accessTokenExp({ accessToken });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      maxAge: 3 * 24 * 60 * 60 * 1000,
-      path: "/",
+  const { accessToken, refreshToken } =
+    await userService.loginWithUserIdAndEmail({
+      userId,
+      email,
+      password,
     });
 
-    return res.status(200).json({
-      status: "Login Success",
-      exp,
-      accessToken,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      status: "server fail",
-      error: error.message,
-    });
-  }
+  const { exp } = await userService.accessTokenExp({ accessToken });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: false,
+    maxAge: 3 * 24 * 60 * 60 * 1000,
+    path: "/",
+  });
+
+  return res.status(200).json({
+    status: "Login Success",
+    exp,
+    accessToken,
+  });
+  // } catch (error) {
+  //   console.log(error);
+  //   return res.status(500).json({
+  //     status: "server fail",
+  //     error: error.message,
+  //   });
+  // }
 };
 
 /** header 에 토큰을 가져와서 토큰의 유효성 검사 */
 authController.authenticate = async (req, res, next) => {
-  try {
-    const accessTokenString = req.headers.authorization;
-    const accessToken = accessTokenString.replace("Bearer ", "");
-    if (!accessToken) {
-      return res.status(401).json({
-        status: "fail",
-        error: "accessToken is empty",
-      });
+  // try {
+  const accessTokenString = req.headers.authorization;
+
+  if (!accessTokenString) {
+    throw new CustomError("accessToken is empty", 401);
+  }
+  const accessToken = accessTokenString.replace("Bearer ", "");
+
+  jwt.verify(accessToken, JWT_PRIVATEKEY, function (err, decoded) {
+    if (err) {
+      throw new CustomError(err.message, 401);
     }
 
-    jwt.verify(accessToken, JWT_PRIVATEKEY, function (err, decoded) {
-      if (err) {
-        return res.status(401).json({
-          status: "fail",
-          error: err.message,
-        });
-      }
-
-      req.userId = decoded._id;
-      next();
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: "server fail",
-      error: error.message,
-    });
-  }
+    req.userId = decoded._id;
+    next();
+  });
 };
 
 authController.refreshTokenVerify = async (req, res, next) => {
-  try {
-    const { refreshToken } = req.cookies;
+  // try {
+  const { refreshToken } = req.cookies;
 
-    if (!refreshToken) {
-      throw new Error("refreshToken not found");
+  if (!refreshToken) {
+    throw new Error("refreshToken not found");
+  }
+
+  jwt.verify(refreshToken, JWT_PRIVATEKEY, function (err, decoded) {
+    if (err) {
+      // return res.status(401).json({
+      //   status: "fail",
+      //   error: err.message,
+      // });
+      throw new CustomError(err.message, 401);
     }
 
-    jwt.verify(refreshToken, JWT_PRIVATEKEY, function (err, decoded) {
-      if (err) {
-        return res.status(401).json({
-          status: "fail",
-          error: err.message,
-        });
-      }
-
-      req.userId = decoded._id;
-      next();
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "server fail",
-      error: error.message,
-    });
-  }
+    req.userId = decoded._id;
+    next();
+  });
+  // } catch (error) {
+  //   res.status(500).json({
+  //     status: "server fail",
+  //     error: error.message,
+  //   });
+  // }
 };
 
 authController.generateNewToken = async (req, res) => {
-  try {
-    const { userId } = req;
+  // try {
+  const { userId } = req;
 
-    if (!userId) {
-      throw new Error("userId not found");
-    }
-
-    const accessToken = jwt.sign(
-      {
-        _id: userId,
-      },
-      JWT_PRIVATEKEY,
-      { expiresIn: "1h" }
-      // { expiresIn: "1m" }
-    );
-
-    const { exp } = await userService.accessTokenExp({ accessToken });
-
-    res.status(200).json({
-      status: "success",
-      accessToken,
-      exp,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "server fail",
-      error: error.message,
-    });
+  if (!userId) {
+    // throw new Error("userId not found");
+    throw new CustomError("userId not found", 409);
   }
+
+  const accessToken = jwt.sign(
+    {
+      _id: userId,
+    },
+    JWT_PRIVATEKEY,
+    { expiresIn: "1h" }
+  );
+
+  const { exp } = await userService.accessTokenExp({ accessToken });
+
+  res.status(200).json({
+    status: "success",
+    accessToken,
+    exp,
+  });
+  // } catch (error) {
+  //   res.status(500).json({
+  //     status: "server fail",
+  //     error: error.message,
+  //   });
+  // }
 };
 
-// authController.logout = async (req, res) => {
-//   try {
-//     // refresh 토큰 삭제
-//     res.clearCookie("refreshToken", {
-//       httpOnly: true,
-//       secure: false,
-//       maxAge: 0,
-//       path: "/",
-//     });
-
-//     res.status(200).json({
-//       status: "success",
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       status: "server fail",
-//       error: error.message,
-//     });
-//   }
-// };
-
 authController.logout = async (req, res) => {
-  try {
-    // refresh 토큰 삭제
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: false,
-      maxAge: 0,
-      path: "/",
-    });
+  // try {
+  // refresh 토큰 삭제
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false,
+    maxAge: 0,
+    path: "/",
+  });
 
-    res.status(200).json({
-      status: "success",
-      message: "Logout successful",
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      error: error.message,
-    });
-  }
+  res.status(200).json({
+    status: "success",
+    message: "Logout successful",
+  });
+  // } catch (error) {
+  //   res.status(500).json({
+  //     status: "error",
+  //     error: error.message,
+  //   });
+  // }
 };
 
 module.exports = authController;
